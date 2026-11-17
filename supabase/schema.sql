@@ -19,7 +19,7 @@ create or replace function public.lifeos_touch_updated_at()
 returns trigger
 language plpgsql
 set search_path = ''
-as $
+as $$
 begin
   new.updated_at := clock_timestamp();
   return new;
