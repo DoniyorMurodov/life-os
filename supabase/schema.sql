@@ -18,7 +18,8 @@ create index if not exists lifeos_records_user_updated_idx
 create or replace function public.lifeos_touch_updated_at()
 returns trigger
 language plpgsql
-as $$
+set search_path = ''
+as $
 begin
   new.updated_at := clock_timestamp();
   return new;

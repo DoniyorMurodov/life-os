@@ -10,7 +10,7 @@
  *               QSTASH_NEXT_SIGNING_KEY, optional QSTASH_URL, optional APP_ACCESS_CODE.
  */
 import { Client } from '@upstash/qstash';
-import { checkAccessCode, clip, isValidSubscription, publicOrigin, pushConfigured, readJsonBody } from './_shared.js';
+import { checkAccessCode, clip, getVapidKeys, isValidSubscription, publicOrigin, pushConfigured, readJsonBody } from './_shared.js';
 
 const MAX_DELAY_MS = 6 * 60 * 60 * 1000; // a timer phase is at most a few hours
 
@@ -19,7 +19,7 @@ const qstash = () =>
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    return res.status(200).json({ enabled: pushConfigured(), publicKey: process.env.VAPID_PUBLIC_KEY || null });
+    return res.status(200).json({ enabled: pushConfigured(), publicKey: pushConfigured() ? getVapidKeys().publicKey : null });
   }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!checkAccessCode(req, res)) return undefined;

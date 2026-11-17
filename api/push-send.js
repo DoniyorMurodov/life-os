@@ -4,7 +4,7 @@
  */
 import { Receiver } from '@upstash/qstash';
 import * as webpush from 'web-push';
-import { clip, isValidSubscription, pushConfigured, readRawBody } from './_shared.js';
+import { clip, getVapidKeys, isValidSubscription, pushConfigured, readRawBody } from './_shared.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -31,11 +31,8 @@ export default async function handler(req, res) {
 }
 
 export async function sendPush({ subscription, title, body }, res) {
-  webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || 'mailto:life-os@example.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY,
-  );
+  const vapid = getVapidKeys();
+  webpush.setVapidDetails(process.env.VAPID_SUBJECT || 'mailto:life-os@example.com', vapid.publicKey, vapid.privateKey);
   try {
     await webpush.sendNotification(
       subscription,
